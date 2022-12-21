@@ -2,27 +2,18 @@ const express = require("express");
 const router = require("./routes/index");
 const userRouter = require("./routes/users");
 const expressLayouts = require("express-ejs-layouts");
-const mongoose = require("mongoose");
 const flash = require("connect-flash");
 const session = require("express-session");
 const passport = require("passport");
 
 const app = express();
-
+const PORT = process.env.process || 5000;
 // passport config
 require("./config/passport")(passport);
+
 // DB config
-const db = require("./config/keys").MongoURI;
-
-// connect to mongo
-
-mongoose.set("strictQuery", false);
-mongoose
-  .connect(db, {
-    useNewUrlParser: true,
-  })
-  .then(() => console.log("Mongodb connected...."))
-  .catch((err) => console.log(err));
+require("./config/keys").connectToMongoDB(); // Connect to MongoDB
+require("dotenv").config();
 
 // Ejs
 app.use(expressLayouts);
@@ -57,7 +48,5 @@ app.use((req, res, next) => {
 // app.use("/", require("./routes/index"));
 app.use("/", router);
 app.use("/users", userRouter);
-
-const PORT = process.env.process || 5000;
 
 app.listen(PORT, console.log(`Server started on port ${PORT}`));
